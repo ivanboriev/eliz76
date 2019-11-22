@@ -5,6 +5,7 @@ namespace App\Generators\DocumentsGenerators;
 
 
 use App\Subject;
+use App\Template;
 
 class OtherDocumentGenerator
 {
@@ -52,7 +53,6 @@ class OtherDocumentGenerator
         $this->programGenerator($path);
         $this->teplovizorGenerator($path);
         $this->visualGenerator($path);
-
     }
 
     private function prepareData(Subject $subject)
@@ -82,7 +82,9 @@ class OtherDocumentGenerator
         $this->start_month = $subject->customer->start_date->locale('ru')->monthName;
         $this->start_year = $subject->customer->start_date->year;
         $this->c_id = $subject->customer->id;
-        $this->s_id = $subject->id;
+        $this->s_id = $subject->customer->subjects->search(function ($i) use ($subject) {
+            return $i->id === $subject->id;
+        });
         $this->contract_day = $subject->customer->contract_date->day;
         $this->contract_month = $subject->customer->contract_date->locale('ru')->monthName;
         $this->contract_year = $subject->customer->contract_date->year;
@@ -91,7 +93,8 @@ class OtherDocumentGenerator
 
     private function titleGenerate($path)
     {
-        $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/title.docx'));
+        $template = Template::where('type', 'title')->first();
+        $this->word = new \PhpOffice\PhpWord\TemplateProcessor($template->path);
 
         $this->word->setValue('company_name', $this->company_name);
         $this->word->setValue('company_address', $this->company_address);
@@ -122,14 +125,14 @@ class OtherDocumentGenerator
         $this->word->setValue('contract_year', $this->contract_year);
         $this->word->setValue('contract_number', $this->contract_number);
         $this->word->setValue('c_id', $this->c_id);
-        $this->word->setValue('s_id', $this->s_id);
+        $this->word->setValue('s_id', $this->s_id + 1);
 
-        $this->word->saveAs($path . "/Титульный лист.docx");
-
+        $this->word->saveAs($path . "/" . $template->name . ".docx");
     }
 
     public function conturGenerator($path)
     {
+        $template = Template::where('type', 'contur')->first();
         $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/contur.docx'));
 
         $this->word->setValue('company_name', $this->company_name);
@@ -157,13 +160,14 @@ class OtherDocumentGenerator
         $this->word->setValue('start_month', $this->start_month);
         $this->word->setValue('start_year', $this->start_year);
         $this->word->setValue('c_id', $this->c_id);
-        $this->word->setValue('s_id', $this->s_id);
+        $this->word->setValue('s_id', $this->s_id + 1);
 
-        $this->word->saveAs($path . "/Контур.docx");
+        $this->word->saveAs($path . "/" . $template->name . ".docx");
     }
 
     private function deffectsGenerator($path)
     {
+        $template = Template::where('type', 'deffects')->first();
         $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/deffects.docx'));
 
         $this->word->setValue('company_name', $this->company_name);
@@ -191,14 +195,15 @@ class OtherDocumentGenerator
         $this->word->setValue('start_month', $this->start_month);
         $this->word->setValue('start_year', $this->start_year);
         $this->word->setValue('c_id', $this->c_id);
-        $this->word->setValue('s_id', $this->s_id);
+        $this->word->setValue('s_id', $this->s_id + 1);
 
-        $this->word->saveAs($path . "/Ведомость дефектов.docx");
+        $this->word->saveAs($path . "/" . $template->name . ".docx");
     }
 
     private function listCiGenerator($path)
     {
-        $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/listci.docx'));
+        $template = Template::where('type', 'ci_list')->first();
+        $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/ci_list.docx'));
 
         $this->word->setValue('company_name', $this->company_name);
         $this->word->setValue('company_address', $this->company_address);
@@ -225,13 +230,15 @@ class OtherDocumentGenerator
         $this->word->setValue('start_month', $this->start_month);
         $this->word->setValue('start_year', $this->start_year);
         $this->word->setValue('c_id', $this->c_id);
-        $this->word->setValue('s_id', $this->s_id);
+        $this->word->setValue('s_id', $this->s_id + 1);
 
-        $this->word->saveAs($path . "/Список СИ.docx");
+        $this->word->saveAs($path . "/" . $template->name . ".docx");
     }
 
     private function neprerivGenerator($path)
     {
+        $template = Template::where('type', 'nepreriv')->first();
+
         $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/nepreriv.docx'));
 
         $this->word->setValue('company_name', $this->company_name);
@@ -259,13 +266,14 @@ class OtherDocumentGenerator
         $this->word->setValue('start_month', $this->start_month);
         $this->word->setValue('start_year', $this->start_year);
         $this->word->setValue('c_id', $this->c_id);
-        $this->word->setValue('s_id', $this->s_id);
+        $this->word->setValue('s_id', $this->s_id + 1);
 
-        $this->word->saveAs($path . "/Непрерывность.docx");
+        $this->word->saveAs($path . "/" . $template->name . ".docx");
     }
 
     private function programGenerator($path)
     {
+        $template = Template::where('type', 'program')->first();
         $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/program.docx'));
 
         $this->word->setValue('company_name', $this->company_name);
@@ -295,11 +303,12 @@ class OtherDocumentGenerator
         $this->word->setValue('c_id', $this->c_id);
         $this->word->setValue('s_id', $this->s_id);
 
-        $this->word->saveAs($path . "/Программа испытаний.docx");
+        $this->word->saveAs($path . "/" . $template->name . ".docx");
     }
 
     private function teplovizorGenerator($path)
     {
+        $template = Template::where('type', 'teplovizor')->first();
         $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/teplovizor.docx'));
 
         $this->word->setValue('company_name', $this->company_name);
@@ -329,11 +338,12 @@ class OtherDocumentGenerator
         $this->word->setValue('c_id', $this->c_id);
         $this->word->setValue('s_id', $this->s_id);
 
-        $this->word->saveAs($path . "/Тепловизор.docx");
+        $this->word->saveAs($path . "/" . $template->name . ".docx");
     }
 
     private function visualGenerator($path)
     {
+        $template = Template::where('type', 'visual')->first();
         $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/visual.docx'));
 
         $this->word->setValue('company_name', $this->company_name);
@@ -363,6 +373,6 @@ class OtherDocumentGenerator
         $this->word->setValue('c_id', $this->c_id);
         $this->word->setValue('s_id', $this->s_id);
 
-        $this->word->saveAs($path . "/Визуальный осмотр.docx");
+        $this->word->saveAs($path . "/" . $template->name . ".docx");
     }
 }

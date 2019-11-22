@@ -5,6 +5,7 @@ namespace App\Generators\DocumentsGenerators;
 
 
 use App\Subject;
+use App\Template;
 
 class UzoGenerator
 {
@@ -12,7 +13,8 @@ class UzoGenerator
 
     public function __construct()
     {
-        $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/uzo.docx'));
+        $this->template = Template::where('type', 'uzo')->first();
+        $this->word = new \PhpOffice\PhpWord\TemplateProcessor($this->template->path);
     }
 
     public function generate(Subject $subject, $path)
@@ -80,7 +82,7 @@ class UzoGenerator
                             'automate' => $uzo_data['automate'],
                             'nominal' => $uzo_data['nominal'],
                             'srtr1' => $uzo_data['srtr1'],
-                            'srdz1' =>$uzo_data['srdz1'],
+                            'srdz1' => $uzo_data['srdz1'],
                             'srtr2' => $uzo_data['srtr2'],
                             'srdz2' => $uzo_data['srdz2'],
                             'tepl_rasc' => $uzo_data['tepl_rasc'],
@@ -92,7 +94,7 @@ class UzoGenerator
                 }
             }
         }
-        $this->word->cloneRowAndSetValues('group_name',$data);
-        $this->word->saveAs($path."/Протокол УЗО.docx");
+        $this->word->cloneRowAndSetValues('group_name', $data);
+        $this->word->saveAs($path . "/" . $this->template->name . ".docx");
     }
 }

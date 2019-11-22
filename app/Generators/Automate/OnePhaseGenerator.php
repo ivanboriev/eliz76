@@ -17,7 +17,7 @@ class OnePhaseGenerator
     protected static $magn = '';
     protected static $nominal;
 
-    public static function generate($shield, $group, $cable)
+    public static function generate($group, $cable)
     {
         self::$nominal = $group->automate_nominal;
         switch ($group->automate_category) {
@@ -40,7 +40,7 @@ class OnePhaseGenerator
         }
     }
 
-    private static function phaseGenerate($group, $cable)
+    private static function phaseGenerate($group)
     {
         return [
             'name' => $group->name,

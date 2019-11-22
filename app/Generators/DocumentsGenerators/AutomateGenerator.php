@@ -5,14 +5,18 @@ namespace App\Generators\DocumentsGenerators;
 
 
 use App\Subject;
+use App\Template;
+use App\Equip;
 
 class AutomateGenerator
 {
     public $word;
+    public $template;
 
     public function __construct()
     {
-        $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/automats.docx'));
+        $this->template = Template::where('type', 'automate')->first();
+        $this->word = new \PhpOffice\PhpWord\TemplateProcessor($this->template->path);
     }
 
     public function generate(Subject $subject, $path)
@@ -77,8 +81,9 @@ class AutomateGenerator
                     ]);
 
                     foreach ($shield->automate_data as $automate_data) {
+
                         array_push($data, [
-                            'number' => $number,
+                            'number' => $automate_data['name'] ? $number : '',
                             'group_name' => $automate_data['name'],
                             'automate' => $automate_data['automate'],
                             'nominal' => $automate_data['nominal'],
@@ -91,12 +96,32 @@ class AutomateGenerator
                             'sopr' => $automate_data['sopr'],
                             'result' => $automate_data['result'],
                         ]);
-                        $number++;
+                        if ($automate_data['name']) {
+                            $number++;
+                        }
                     }
                 }
             }
         }
-        $this->word->cloneRowAndSetValues('group_name',$data);
-        $this->word->saveAs($path."/Автоматы.docx");
+
+        $equips = [];
+        $protocol_equips = Equip::find($subject->automate_equip);
+        $num = 1;
+        foreach ($protocol_equips as $equip) {
+
+            array_push($equips, [
+                "num" => $num,
+                "eq_name" => $equip->name,
+                "eq_number" => $equip->factory_number,
+                "eq_check_date" => $equip->check_date,
+
+            ]);
+            $num++;
+        }
+
+
+        $this->word->cloneRowAndSetValues('group_name', $data);
+        $this->word->cloneRowAndSetValues('eq_name', $equips);
+        $this->word->saveAs($path . "/" . $this->template->name . ".docx");
     }
 }

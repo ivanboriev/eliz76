@@ -5,6 +5,7 @@ namespace App\Generators\DocumentsGenerators;
 
 
 use App\Subject;
+use App\Template;
 
 class IsolateGenerator
 {
@@ -12,7 +13,8 @@ class IsolateGenerator
 
     public function __construct()
     {
-        $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/isolate.docx'));
+        $this->template = Template::where('type', 'isolate')->first();
+        $this->word = new \PhpOffice\PhpWord\TemplateProcessor($this->template->path);
     }
 
     public function generate(Subject $subject, $path)
@@ -105,7 +107,7 @@ class IsolateGenerator
                 }
             }
         }
-        $this->word->cloneRowAndSetValues('group_name',$data);
-        $this->word->saveAs($path."/Протокол изоляции.docx");
+        $this->word->cloneRowAndSetValues('group_name', $data);
+        $this->word->saveAs($path . "/" . $this->template->name . ".docx");
     }
 }

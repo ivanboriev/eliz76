@@ -16,6 +16,7 @@ Route::post('subject', 'SubjectController@show');
 Route::post('updateSubject', 'SubjectController@update');
 Route::post('generate_doc', 'SubjectController@generate');
 Route::post('copySubject', 'SubjectController@copySubject');
+Route::post('min_max', 'SubjectController@getMinMax');
 
 
 Route::post('saveClusters', 'ClusterController@store');
@@ -45,32 +46,34 @@ Route::post('updateCable', 'CableController@update');
 
 
 
-Route::post('get_isolate_data','ShieldController@getIsolateData');
-Route::post('save_isolate_data','ShieldController@saveIsolateData');
-Route::post('change_isolate_block','ShieldController@isolateBlock');
+Route::post('get_isolate_data', 'ShieldController@getIsolateData');
+Route::post('save_isolate_data', 'ShieldController@saveIsolateData');
+Route::post('change_isolate_block', 'ShieldController@isolateBlock');
 
-Route::post('get_phase_data','ShieldController@getPhaseData');
-Route::post('save_phase_data','ShieldController@savePhaseData');
-Route::post('change_phase_block','ShieldController@phaseBlock');
+Route::post('get_phase_data', 'ShieldController@getPhaseData');
+Route::post('save_phase_data', 'ShieldController@savePhaseData');
+Route::post('change_phase_block', 'ShieldController@phaseBlock');
 
-Route::post('get_uzo_data','ShieldController@getUzoData');
-Route::post('save_uzo_data','ShieldController@saveUzoData');
-Route::post('change_uzo_block','ShieldController@uzoBlock');
-
-
-Route::post('get_automate_data','ShieldController@getAutomateData');
-Route::post('save_automate_data','ShieldController@saveAutomateData');
-Route::post('change_automate_block','ShieldController@automateBlock');
-Route::post('get_automate_names','ShieldController@automateNames');
+Route::post('get_uzo_data', 'ShieldController@getUzoData');
+Route::post('save_uzo_data', 'ShieldController@saveUzoData');
+Route::post('change_uzo_block', 'ShieldController@uzoBlock');
 
 
-Route::post('add_template','TemplatesController@store');
-Route::post('get_templates','TemplatesController@index');
-Route::post('doc_delete','TemplatesController@destroy');
+Route::post('get_automate_data', 'ShieldController@getAutomateData');
+Route::post('save_automate_data', 'ShieldController@saveAutomateData');
+Route::post('change_automate_block', 'ShieldController@automateBlock');
+Route::post('get_automate_names', 'ShieldController@automateNames');
+
+
+Route::post('add_template', 'TemplatesController@store');
+Route::post('update_template', 'TemplatesController@update');
+Route::post('get_templates', 'TemplatesController@index');
+Route::post('get_template', 'TemplatesController@template');
+
+Route::post('doc_delete', 'TemplatesController@destroy');
 
 Route::post('equips', 'EquipController@index');
+Route::post('equip', 'EquipController@getEquip');
 Route::post('equip_add', 'EquipController@store');
-
-
-
-
+Route::post('equip_update', 'EquipController@update');
+Route::post('equip_delete', 'EquipController@destroy');

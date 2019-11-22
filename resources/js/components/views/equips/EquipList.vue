@@ -10,29 +10,17 @@
             <v-toolbar>
                 <v-toolbar-title>Оборудование</v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn
-                    color="blue darken-1"
-                    @click="createEquip"
-                >
+                <v-btn color="blue darken-1" @click="createEquip">
                     Добавить оборудование
                 </v-btn>
             </v-toolbar>
-
         </template>
 
         <template v-slot:item.action="{ item }">
-            <v-icon
-                small
-                class="mr-2"
-                @click="editEquip(item.id)"
-            >
+            <v-icon small class="mr-2" @click="editEquip(item.id)">
                 mdi-pencil
             </v-icon>
-            <v-icon
-                small
-                color="red"
-                @click="deleteEquip(item.id)"
-            >
+            <v-icon small color="red" @click="deleteEquip(item.id)">
                 mdi-delete
             </v-icon>
         </template>
@@ -40,38 +28,42 @@
 </template>
 
 <script>
-    export default {
-        name: "EquipList",
-        data: () => ({
-            equips: [],
-            headers: [
-                {text: 'Название', value: 'name'},
-                {text: 'Заводской номер', value: 'factory_number'},
-                {text: 'Дата проверки', value: 'check_date'},
-                {text: 'Действия', value: 'action', sortable: false},
-            ],
-        }),
-        methods: {
-            createEquip() {
-                this.$router.push({name: 'equips-add'});
-            },
-            editEquip() {
-            },
-            deleteEquip(id) {
-                this.$api.post('equip_delete',{id:id})
-                    .then(() => this.getTemplates());
-            },
-            getEquips() {
-                this.$api.post('equips')
-                    .then(response => this.equips = response.data);
-            }
+export default {
+    name: "EquipList",
+    data: () => ({
+        equips: [],
+        headers: [
+            { text: "Название", value: "name" },
+            { text: "Заводской номер", value: "factory_number" },
+            { text: "Дата проверки", value: "check_date" },
+            { text: "Действия", value: "action", sortable: false }
+        ]
+    }),
+    methods: {
+        createEquip() {
+            this.$router.push({ name: "equips-add" });
         },
-        mounted() {
-            this.getEquips();
+        editEquip(id) {
+            this.$router.push({
+                name: "equips-edit",
+                params: { id: id }
+            });
+        },
+        deleteEquip(id) {
+            this.$api
+                .post("equip_delete", { id: id })
+                .then(() => this.getEquips());
+        },
+        getEquips() {
+            this.$api
+                .post("equips")
+                .then(response => (this.equips = response.data));
         }
+    },
+    mounted() {
+        this.getEquips();
     }
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

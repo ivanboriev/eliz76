@@ -5,6 +5,7 @@ namespace App\Generators\DocumentsGenerators;
 
 
 use App\Subject;
+use App\Template;
 
 class PhaseGenerator
 {
@@ -12,7 +13,8 @@ class PhaseGenerator
 
     public function __construct()
     {
-        $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/phase.docx'));
+        $this->template = Template::where('type', 'phase')->first();
+        $this->word = new \PhpOffice\PhpWord\TemplateProcessor($this->template->path);
     }
 
     public function generate(Subject $subject, $path)
@@ -105,7 +107,7 @@ class PhaseGenerator
                 }
             }
         }
-        $this->word->cloneRowAndSetValues('group_name',$data);
-        $this->word->saveAs($path."/Фаза-ноль.docx");
+        $this->word->cloneRowAndSetValues('group_name', $data);
+        $this->word->saveAs($path . "/" . $this->template->name . ".docx");
     }
 }

@@ -1,5 +1,5 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from "vue";
+import VueRouter from "vue-router";
 import Customers from "./components/views/Customers";
 import CreateCustomer from "./components/views/CreateCustomer";
 import EditCustomer from "./components/views/EditCustomer";
@@ -13,94 +13,108 @@ import CreateCable from "./components/views/CreateCable";
 import EditCable from "./components/views/EditCable";
 import TemplateList from "./components/views/templates/TemplateList";
 import CreateTemplate from "./components/views/templates/CreateTemplate";
+import EditTemplate from "./components/views/templates/EditTemplate";
 import EquipList from "./components/views/equips/EquipList";
 import EquipAdd from "./components/views/equips/EquipAdd";
+import EquipEdit from "./components/views/equips/EquipEdit";
 
 Vue.use(VueRouter);
 
 export default new VueRouter({
-    mode:'history',
+    mode: "history",
     routes: [
         {
-            path: '/',
-            name: 'customers',
+            path: "/",
+            name: "customers",
             component: Customers
         },
         {
-            path: '/cables',
-            name: 'cables',
+            path: "/cables",
+            name: "cables",
             component: Cables
         },
         {
-            path: '/createCable',
-            name: 'createCable',
+            path: "/createCable",
+            name: "createCable",
             component: CreateCable
         },
         {
-            path: '/editCable/:id',
-            name: 'editCable',
+            path: "/editCable/:id",
+            name: "editCable",
             component: EditCable,
             props: true
         },
         {
-            path: '/createCustomer',
-            name: 'createCustomer',
+            path: "/createCustomer",
+            name: "createCustomer",
             component: CreateCustomer
         },
         {
-            path: '/editCustomer/:id',
-            name: 'editCustomer',
+            path: "/editCustomer/:id",
+            name: "editCustomer",
             component: EditCustomer,
             props: true
         },
         {
-            path: '/customer/:id/subjects',
-            name: 'subjects',
+            path: "/customer/:id/subjects",
+            name: "subjects",
             component: Subjects,
             props: true
         },
         {
-            path: '/customer/:id/createSubject',
-            name: 'createSubject',
+            path: "/customer/:id/createSubject",
+            name: "createSubject",
             component: CreateSubject
         },
         {
-            path: '/customer/:id/subject/:sid/edit',
-            name: 'editSubject',
+            path: "/customer/:id/subject/:sid/edit",
+            name: "editSubject",
             component: EditSubject,
             props: true
         },
         {
-            path: '/customer/:id/subject/:sid/dashboard',
-            name: 'dashboard',
+            path: "/customer/:id/subject/:sid/dashboard",
+            name: "dashboard",
             component: Dashboard,
             props: true
         },
         {
-            path: '/customer/:id/subject/:sid/shield/:shid/editor',
-            name: 'editor',
+            path: "/customer/:id/subject/:sid/shield/:shid/editor",
+            name: "editor",
             component: Editor,
             props: true
         },
         {
-            path: '/doc-templates',
-            name: 'templates',
+            path: "/doc-templates",
+            name: "templates",
             component: TemplateList
         },
         {
-            path: '/createTemplate',
-            name: 'createTemplate',
+            path: "/createTemplate",
+            name: "createTemplate",
             component: CreateTemplate
         },
         {
-            path: '/equips',
-            name: 'equips',
+            path: "/editTemplate/:id",
+            name: "editTemplate",
+            component: EditTemplate,
+            props: true
+        },
+        {
+            path: "/equips",
+            name: "equips",
             component: EquipList
         },
         {
-            path: '/equips_add',
-            name: 'equips-add',
+            path: "/equips_add",
+            name: "equips-add",
             component: EquipAdd
         },
+        {
+            path: "/equips_edit/:id",
+            name: "equips-edit",
+            component: EquipEdit,
+            props: true
+        }
     ]
-})
+});

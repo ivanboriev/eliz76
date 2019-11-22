@@ -57,9 +57,13 @@ class SubjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function getMinMax(Request $request)
     {
-        //
+        $subject = Subject::find($request->sid);
+        return response()->json([
+            "min" => $subject->min,
+            "max" => $subject->max,
+        ]);
     }
 
     /**
@@ -95,37 +99,38 @@ class SubjectController extends Controller
 
     public function generate(Request $request)
     {
-       $subject =  Subject::find($request->id);
+        $subject =  Subject::find($request->id);
 
-       $doc = new DocumentGenerator($subject);
-       $path = $doc->generate();
-       $subject->documents_path = $path;
-       $subject->documents_generated = true;
-       $subject->save();
+        $doc = new DocumentGenerator($subject);
+        $path = $doc->generate();
+        $subject->documents_path = $path;
+        $subject->documents_generated = true;
+        $subject->save();
 
 
-       $subject->save();
+        $subject->save();
         return response()->json([
             'message' => 'Документы созданы'
         ]);
     }
 
-    public function copySubject(Request $request){
+    public function copySubject(Request $request)
+    {
         $subject =  Subject::find($request->id);
         $new_subject = $subject->replicate();
         $new_subject->name = $new_subject->name . ' - Копия';
         $new_subject->push();
-        foreach($subject->clusters as $cluster){
+        foreach ($subject->clusters as $cluster) {
             $new_cluster = $cluster->replicate();
-            $new_cluster->subject_id =$new_subject->id;
+            $new_cluster->subject_id = $new_subject->id;
             $new_cluster->push();
 
-            foreach($cluster->shields as $shield){
+            foreach ($cluster->shields as $shield) {
                 $new_shield = $shield->replicate();
                 $new_shield->cluster_id = $new_cluster->id;
                 $new_shield->push();
 
-                foreach($shield->groups as $group){
+                foreach ($shield->groups as $group) {
                     $new_group = $group->replicate();
                     $new_group->shield_id = $new_shield->id;
                     $new_group->push();

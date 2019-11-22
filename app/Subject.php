@@ -28,7 +28,9 @@ class Subject extends Model
         'teplovizor_equip',
         'min',
         'max',
-        'contur_temp'
+        'contur_temp',
+        'contur_atm',
+        'contur_humidity'
     ];
     protected $dates = ['created_at', 'updated_at'];
     protected $casts = [

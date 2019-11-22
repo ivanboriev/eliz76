@@ -25,7 +25,11 @@
                         ></v-select>
                     </v-flex>
                     <v-flex xs12 md4>
-                        <v-file-input v-model="file" show-size label="Файл"></v-file-input>
+                        <v-file-input
+                            v-model="file"
+                            show-size
+                            label="Файл"
+                        ></v-file-input>
                     </v-flex>
                 </v-layout>
             </v-container>
@@ -39,38 +43,53 @@
 </template>
 
 <script>
-    export default {
-        name: "CreateTemplate",
-        data: () => ({
-            types: [
-                {name: "Титульный лист", value: "title"}
-            ],
-            file: null,
-            template: {
-                name: '',
-                type: '',
-            }
-        }),
-        methods: {
-            cancel() {
-                this.$router.push('/doc-templates');
-            },
+export default {
+    name: "CreateTemplate",
+    data: () => ({
+        types: [
+            { name: "Титульный лист", value: "title" },
+            { name: "Программа испытаний", value: "program" },
+            { name: "Список СИ", value: "ci_list" },
+            { name: "Визуальный осмотр", value: "visual" },
+            { name: "Непрерывность", value: "nepreriv" },
+            { name: "Сопротивление изоляции", value: "isolate" },
+            { name: "Фаза нуль", value: "phase" },
+            { name: "Контур", value: "contur" },
+            { name: "Автоматы", value: "automate" },
+            { name: "УЗО", value: "uzo" },
+            { name: "Тепловизор", value: "teplovizor" },
+            { name: "Ведомость дефектов", value: "deffects" }
+        ],
+        file: null,
+        template: {
+            name: "",
+            type: ""
+        }
+    }),
+    methods: {
+        cancel() {
+            this.$router.push("/doc-templates");
+        },
 
-            addTemplate() {
-                if (!this.file) {alert('Добавьте файл шаблона!'); return; };
-                console.log(this.file instanceof Blob, this.file);
-                const config = {headers: {'content-type': 'multipart/form-data'}};
-                let formData = new FormData();
-                formData.append('doc_file', this.file, this.file.name);
-                formData.append('name', this.template.name);
-                formData.append('type', this.template.type);
-                this.$api.post('/add_template', formData, config).then(() => this.$router.push('/doc-templates'));
-
+        addTemplate() {
+            if (!this.file) {
+                alert("Добавьте файл шаблона!");
+                return;
             }
+            console.log(this.file instanceof Blob, this.file);
+            const config = {
+                headers: { "content-type": "multipart/form-data" }
+            };
+            let formData = new FormData();
+            formData.append("doc_file", this.file, this.file.name);
+            formData.append("name", this.template.name);
+            formData.append("type", this.template.type);
+            this.$api
+                .post("/add_template", formData, config)
+                .then(() => this.$router.push("/doc-templates"));
         }
     }
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

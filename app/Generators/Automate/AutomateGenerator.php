@@ -16,16 +16,15 @@ class AutomateGenerator
     {
         foreach ($shield->groups->sortBy('order') as $group) {
             $cable = Cable::find($group->cable_id);
-           /* if ($cable->count >= 3) {
-                array_push(self::$data, OnePhaseGenerator::generate($shield, $group, $cable));
+            if ($cable->count <= 3 && !$group->pred) {
+                array_push(self::$data, OnePhaseGenerator::generate($group, $cable));
             }
-            if ($cable->count > 3) {
-                array_push(self::$data, ThreePhaseGenerator::generate($shield, $group, $cable));
-            }*/
-            if(!$group->pred){
-                array_push(self::$data, OnePhaseGenerator::generate($shield, $group, $cable));
+            if ($cable->count > 3 && !$group->pred) {
+                $arrays =  ThreePhaseGenerator::generate($group, $cable);
+                foreach ($arrays as $arr) {
+                    array_push(self::$data, $arr);
+                }
             }
-
         }
 
         $shield->automate_data = self::$data;
