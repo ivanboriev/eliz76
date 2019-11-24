@@ -34,8 +34,10 @@ export default {
         equips: [],
         headers: [
             { text: "Название", value: "name" },
+            { text: "Тип", value: "type" },
             { text: "Заводской номер", value: "factory_number" },
             { text: "Дата проверки", value: "check_date" },
+            { text: "Дата слейдующей проверки", value: "next_check_date" },
             { text: "Действия", value: "action", sortable: false }
         ]
     }),

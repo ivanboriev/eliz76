@@ -104,24 +104,31 @@ class AutomateGenerator
             }
         }
 
-        $equips = [];
+
         $protocol_equips = Equip::find($subject->automate_equip);
-        $num = 1;
-        foreach ($protocol_equips as $equip) {
 
-            array_push($equips, [
-                "num" => $num,
-                "eq_name" => $equip->name,
-                "eq_number" => $equip->factory_number,
-                "eq_check_date" => $equip->check_date,
+        if (count($protocol_equips) > 0) {
+            $equips = [];
+            $num = 1;
+            foreach ($protocol_equips as $equip) {
 
-            ]);
-            $num++;
+                array_push($equips, [
+                    "num" => $num,
+                    "eq_name" => $equip->name,
+                    "eq_type" => $equip->type,
+                    "eq_num" => $equip->factory_number,
+                    "eq_ch_d" => $equip->check_date->format('d.m.Y'),
+                    "eq_nch_d" => $equip->next_check_date->format('d.m.Y'),
+                ]);
+                $num++;
+            }
+            $this->word->cloneRowAndSetValues('eq_name', $equips);
         }
 
 
+
         $this->word->cloneRowAndSetValues('group_name', $data);
-        $this->word->cloneRowAndSetValues('eq_name', $equips);
+
         $this->word->saveAs($path . "/" . $this->template->name . ".docx");
     }
 }

@@ -6,6 +6,9 @@ namespace App\Generators\DocumentsGenerators;
 
 use App\Subject;
 use App\Template;
+use Illuminate\Support\Arr;
+use App\Equip;
+use App\Cable;
 
 class OtherDocumentGenerator
 {
@@ -40,18 +43,19 @@ class OtherDocumentGenerator
     public $start_year;
     public $c_id;
     public $s_id;
+    public $cable_names;
 
 
     public function generate(Subject $subject, $path)
     {
         $this->prepareData($subject);
-        $this->titleGenerate($path);
-        $this->conturGenerator($path);
+        $this->titleGenerate($subject, $path);
+        $this->conturGenerator($subject, $path);
         $this->deffectsGenerator($path);
         $this->listCiGenerator($path);
         $this->neprerivGenerator($path);
         $this->programGenerator($path);
-        $this->teplovizorGenerator($path);
+        $this->teplovizorGenerator($subject, $path);
         $this->visualGenerator($path);
     }
 
@@ -69,6 +73,19 @@ class OtherDocumentGenerator
         $this->company_s_end_day = config('app.company_s_end_day');
         $this->company_s_end_month = config('app.company_s_end_month');
         $this->company_s_end_year = config('app.company_s_end_year');
+        $cables = [];
+        foreach ($subject->clusters as $cluster) {
+            foreach ($cluster->shields as $shield) {
+                foreach ($shield->groups as $group) {
+                    array_push($cables, $group->cable_id);
+                }
+            }
+        }
+
+        $cables = Cable::find(array_unique($cables));
+        $cable_names = implode(", ", $cables->sortBy('name')->unique('name')->pluck('name')->toArray());
+
+        $this->cable_names = $cable_names;
 
         $this->name = $subject->name;
         $this->address = $subject->address;
@@ -78,6 +95,9 @@ class OtherDocumentGenerator
         $this->temp = $subject->temp;
         $this->atm = $subject->atm;
         $this->humidity = $subject->humidity;
+        $this->c_temp = $subject->contur_temp;
+        $this->c_atm = $subject->contur_atm;
+        $this->c_humidity = $subject->contur_humidity;
         $this->start_day = $subject->customer->start_date->day;
         $this->start_month = $subject->customer->start_date->locale('ru')->monthName;
         $this->start_year = $subject->customer->start_date->year;
@@ -91,7 +111,7 @@ class OtherDocumentGenerator
         $this->contract_number = $subject->customer->contract_number;
     }
 
-    private function titleGenerate($path)
+    private function titleGenerate($subject, $path)
     {
         $template = Template::where('type', 'title')->first();
         $this->word = new \PhpOffice\PhpWord\TemplateProcessor($template->path);
@@ -126,11 +146,51 @@ class OtherDocumentGenerator
         $this->word->setValue('contract_number', $this->contract_number);
         $this->word->setValue('c_id', $this->c_id);
         $this->word->setValue('s_id', $this->s_id + 1);
+        $this->word->setValue('cables', $this->cable_names);
+
+        $id_eqs = [];
+        $arr = [
+            $subject->automate_equip,
+            $subject->isolate_equip,
+            $subject->phase_equip,
+            $subject->uzo_equip,
+            $subject->contur_equip,
+            $subject->teplovizor_equip
+        ];
+        foreach ($arr as $items) {
+            if (count($items) > 0) {
+                foreach ($items as $id) {
+                    array_push($id_eqs, $id);
+                }
+            }
+        }
+
+        $id_eqs = array_unique($id_eqs);
+
+
+        $protocol_equips = Equip::find($id_eqs);
+        if (count($protocol_equips) > 0) {
+            $equips = [];
+            $num = 1;
+            foreach ($protocol_equips as $equip) {
+
+                array_push($equips, [
+                    "num" => $num,
+                    "eq_name" => $equip->name,
+                    "eq_num" => $equip->factory_number,
+                    "eq_ch_d" => $equip->check_date->format('d.m.Y'),
+
+                ]);
+                $num++;
+            }
+            $this->word->cloneRowAndSetValues('eq_name', $equips);
+        }
+
 
         $this->word->saveAs($path . "/" . $template->name . ".docx");
     }
 
-    public function conturGenerator($path)
+    public function conturGenerator($subject, $path)
     {
         $template = Template::where('type', 'contur')->first();
         $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/contur.docx'));
@@ -153,14 +213,33 @@ class OtherDocumentGenerator
         $this->word->setValue('customerName', $this->customerName);
         $this->word->setValue('engineer1', $this->engineer1);
         $this->word->setValue('engineer2', $this->engineer2);
-        $this->word->setValue('temp', $this->temp);
-        $this->word->setValue('atm', $this->atm);
-        $this->word->setValue('humidity', $this->humidity);
+        $this->word->setValue('temp', $this->c_temp);
+        $this->word->setValue('atm', $this->c_atm);
+        $this->word->setValue('humidity', $this->c_humidity);
         $this->word->setValue('start_day', $this->start_day);
         $this->word->setValue('start_month', $this->start_month);
         $this->word->setValue('start_year', $this->start_year);
         $this->word->setValue('c_id', $this->c_id);
         $this->word->setValue('s_id', $this->s_id + 1);
+
+        $protocol_equips = Equip::find($subject->contur_equip);
+        if (count($protocol_equips) > 0) {
+            $equips = [];
+            $num = 1;
+            foreach ($protocol_equips as $equip) {
+
+                array_push($equips, [
+                    "num" => $num,
+                    "eq_name" => $equip->name,
+                    "eq_type" => $equip->type,
+                    "eq_num" => $equip->factory_number,
+                    "eq_ch_d" => $equip->check_date->format('d.m.Y'),
+                    "eq_nch_d" => $equip->next_check_date->format('d.m.Y'),
+                ]);
+                $num++;
+            }
+            $this->word->cloneRowAndSetValues('eq_name', $equips);
+        }
 
         $this->word->saveAs($path . "/" . $template->name . ".docx");
     }
@@ -306,7 +385,7 @@ class OtherDocumentGenerator
         $this->word->saveAs($path . "/" . $template->name . ".docx");
     }
 
-    private function teplovizorGenerator($path)
+    private function teplovizorGenerator($subject, $path)
     {
         $template = Template::where('type', 'teplovizor')->first();
         $this->word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('/templates/teplovizor.docx'));
@@ -337,6 +416,25 @@ class OtherDocumentGenerator
         $this->word->setValue('start_year', $this->start_year);
         $this->word->setValue('c_id', $this->c_id);
         $this->word->setValue('s_id', $this->s_id);
+
+        $protocol_equips = Equip::find($subject->teplovizor_equip);
+        if (count($protocol_equips) > 0) {
+            $equips = [];
+            $num = 1;
+            foreach ($protocol_equips as $equip) {
+
+                array_push($equips, [
+                    "num" => $num,
+                    "eq_name" => $equip->name,
+                    "eq_type" => $equip->type,
+                    "eq_num" => $equip->factory_number,
+                    "eq_ch_d" => $equip->check_date->format('d.m.Y'),
+                    "eq_nch_d" => $equip->next_check_date->format('d.m.Y'),
+                ]);
+                $num++;
+            }
+            $this->word->cloneRowAndSetValues('eq_name', $equips);
+        }
 
         $this->word->saveAs($path . "/" . $template->name . ".docx");
     }
